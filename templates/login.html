@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In</title>
+    <style>
+        .signin-form{
+            display: grid;
+            gap: 12px;
+        }
+        .register_reset{
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+    <form class="signin-form" action="{{ url_for('login_user') }}" method="POST">
+        <input type="text" name="email" placeholder="Email">
+        <input type="text" name="password" placeholder="Password">
+        <button type="submit">Sign In</button>
+        <div class="register_reset">
+            <a href="/register">Register</a>
+            <a href="/reset_password">Reset Password</a>
+        </div>
+        
+    </form>
+</body>
+</html>
