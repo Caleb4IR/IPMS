@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        .update-form{
+            display: grid;
+            gap: 12px;
+        }
+    </style>
+
+</head>
+<body>
+    <form class="update-form" action="{{url_for('update_policy')}}" method="POST">
+        <input type="hidden" name="policy_id" value="{{ policy.policy_id }}">
+        <input name="coverage" type="text" placeholder="Coverage" value="{{policy.coverage}}">
+        <input name="image" type="text" placeholder="Image url" value="{{policy.image}}">
+        <input name="premium" type="text" placeholder="Premium" value="{{policy.premium}}">
+
+        <button type="submit">Update Policy</button>
+    </form>
+</body>
+</html>

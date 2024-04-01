@@ -1,12 +1,13 @@
 import os
 from flask import Flask, jsonify, request, render_template
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import relationship
 from sqlalchemy.sql import text
 from dotenv import load_dotenv
 from pprint import pprint
 import uuid
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
+from wtforms import StringField, PasswordField, SubmitField, TextAreaField
 from wtforms.validators import InputRequired, Length, ValidationError
 
 app = Flask(__name__)
@@ -61,7 +62,11 @@ class User(db.Model):
     name = db.Column(db.String(200), nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(100), nullable=False)
-    role_id = db.Column(db.String(50), nullable=False, default="3")
+    role_id = db.Column(
+        db.String(50), db.ForeignKey("roles.role_id"), nullable=False, default="3"
+    )
+    role = relationship("Role", back_populates="users")
+    policyholder = relationship("Policyholder", back_populates="users")
 
     def to_dict(self):
         return {
@@ -69,7 +74,7 @@ class User(db.Model):
             "name": self.name,
             "email": self.email,
             "password": self.password,
-            "role_id": self.role_id,
+            "role": self.role_id,
         }
 
 
@@ -79,6 +84,7 @@ class Policy(db.Model):
     coverage = db.Column(db.String(50), nullable=False)
     image = db.Column(db.String(200))
     premium = db.Column(db.Float)
+    policyholder = relationship("Policyholder", back_populates="policy")
 
     def to_dict(self):
         return {
@@ -93,6 +99,7 @@ class Role(db.Model):
     __tablename__ = "roles"
     role_id = db.Column(db.String(50), primary_key=True)
     name = db.Column(db.String(50))
+    users = relationship("User", back_populates="role")
 
     def to_dict(self):
         return {
@@ -106,9 +113,14 @@ class Policyholder(db.Model):
     policy_number = db.Column(
         db.String(50), primary_key=True, default=lambda: str(uuid.uuid4())
     )
-    user_id = db.Column(db.String(50))
+    user_id = db.Column(db.String(50), db.ForeignKey("users.user_id"))
+    users = relationship("User", back_populates="policyholder")
+
     address = db.Column(db.String(300))
     id_number = db.Column(db.String(50), unique=True, nullable=False)
+
+    policy_id = db.Column(db.String(50), db.ForeignKey("policies.policy_id"))
+    policy = relationship("Policy", back_populates="policyholder")
 
     def to_dict(self):
         return {
@@ -116,7 +128,18 @@ class Policyholder(db.Model):
             "user_id": self.user_id,
             "address": self.address,
             "id_number": self.id_number,
+            "policy_id": self.policy_id,
         }
+
+
+# class Claim(db.Model):
+#     __tablename__ = "claims"
+#     claim_id = db.Column(db.String(50), primary_key=True, default=lambda: str(uuid.uuid4()))
+#     policy_id = db.Column(db.String(50))
+#     name = db.Column(db.String(100), nullable=False)
+#     email = db.Column(db.String(100), nullable=False)
+#     policy_number = db.Column(db.String(50), nullable=False)
+#     claim_description = db.Column(db.Text, nullable=False)
 
 
 class RegistrationForm(FlaskForm):
@@ -183,6 +206,15 @@ class LoginForm(FlaskForm):
                 raise ValidationError("Invaild Credentials")
 
 
+@app.route("/admin/dashboard")
+def admin_dashboard():
+    total_users = User.query.count()
+    total_policies = Policy.query.count()
+    return render_template(
+        "admin_dashboard.html", total_users=total_users, total_policies=total_policies
+    )
+
+
 @app.route("/user/login", methods=["GET", "POST"])
 def login_page():
     form = LoginForm()
@@ -231,50 +263,145 @@ def fire_theft():
         return "Policy not found", 404
 
 
-@app.route("/dashboard")
-def customer_dashboard():
-    return render_template("customer_dashboard.html")
-
-
-# USERS CRUD OPERATIONS
-# GET users
-@app.get("/users")
-def get_users():
-    return jsonify(users)
-
-
-# GET user by id
-@app.get("/users/<id>")
-def get_users_by_id(id):
-    filtered_user = next((user for user in users if user["id"] == id), None)
-    if filtered_user:
-        return jsonify(filtered_user)
-    else:
-        return jsonify({"message": "User not found"}), 404
+@app.route("/admin/user-list")
+def user_list_page():
+    users = User.query.all()
+    return render_template("user-list.html", users=users)
 
 
 # DELETE user by id
-@app.delete("/users/<id>")
-def delete_user(id):
-    deleted_user = next((user for user in users if user["id"] == id), None)
-    if deleted_user:
-        users.remove(deleted_user)
-        return jsonify({"message": "Movie deleted sucessfully", "data": deleted_user})
-    else:
-        return jsonify({"message": "Movie not found"}), 404
+@app.route("/user-list/delete", methods=["POST"])  # HOF
+def delete_user_by_id():
+    id = request.form.get("user_id")
+    filtered_user = User.query.get(id)
+    if not filtered_user:
+        return "<h1>User not found</h1>", 404
+
+    try:
+        db.session.delete(filtered_user)
+        db.session.commit()  # Making the change (update/delete/create) permanent
+        return f"<h1>User deleted Successfully</h1>"
+    except Exception as e:
+        db.session.rollback()  # Undo the change
+        return f"<h1>Error happened {str(e)}</h1>", 500
 
 
 # Update a user
-@app.put("/users/<id>")
-def update_user_by_id(id):
-    data = request.json
-
-    user_to_update = next((user for user in users if user["id"] == id), None)
-    if user_to_update:
-        user_to_update.update(data)
-        return jsonify({"message": "Movie updated", "data": user_to_update})
+@app.route("/user-list/<user_id>/update", methods=["GET"])
+def update_user_form(user_id):
+    user = User.query.get(user_id)
+    if user:
+        return render_template("update_user.html", user=user)
     else:
-        return jsonify({"message": "Movie not updated"}), 404
+        return "User not found", 404
+
+
+@app.route("/user-list/update", methods=["POST"])
+def update_user():
+    user_id = request.form.get("user_id")
+    user_to_update = User.query.get(user_id)
+
+    if not user_to_update:
+        return "<h1>User not found</h1>", 404
+
+    try:
+        user_to_update.name = request.form.get("name")
+        user_to_update.email = request.form.get("email")
+
+        db.session.commit()
+        return "<h1>User updated</h1>"
+    except Exception as e:
+        db.session.rollback()
+        return "<h1>Server Error</h1>", 500
 
 
 # POLICY CRUD OPERATIONS
+
+
+@app.route("/admin/policy-list")
+def policy_list_page():
+    policies = Policy.query.all()
+    return render_template("policy-list.html", policies=policies)
+
+
+# DELETE policy by id
+@app.route("/policy-list/delete", methods=["POST"])  # HOF
+def delete_policy_by_id():
+    id = request.form.get("policy_id")
+    filtered_policy = Policy.query.get(id)
+    if not filtered_policy:
+        return "<h1>Policy not found</h1>", 404
+
+    try:
+        db.session.delete(filtered_policy)
+        db.session.commit()  # Making the change (update/delete/create) permanent
+        return f"<h1>Policy deleted Successfully</h1>"
+    except Exception as e:
+        db.session.rollback()  # Undo the change
+        return f"<h1>Error happened {str(e)}</h1>", 500
+
+
+# Update a policy
+@app.route("/policy-list/<policy_id>/update", methods=["GET"])
+def update_polcy_form(policy_id):
+    policy = Policy.query.get(policy_id)
+    if policy:
+        return render_template("update_policy.html", policy=policy)
+    else:
+        return "Policy not found", 404
+
+
+@app.route("/policy-list/update", methods=["POST"])
+def update_policy():
+    policy_id = request.form.get("policy_id")
+    policy_to_update = Policy.query.get(policy_id)
+
+    if not policy_to_update:
+        return "<h1>Policy not found</h1>", 404
+
+    try:
+        policy_to_update.coverage = request.form.get("coverage")
+        policy_to_update.image = request.form.get("image")
+        policy_to_update.premium = request.form.get("premium")
+
+        db.session.commit()
+        return "<h1>Premium updated</h1>"
+    except Exception as e:
+        db.session.rollback()
+        return "<h1>Server Error</h1>", 500
+
+
+# Claim Submission
+class ClaimsForm(FlaskForm):
+    name = StringField("Name", validators=[InputRequired(), Length(min=2, max=100)])
+    email = StringField("Email", validators=[InputRequired(), Length(min=6, max=100)])
+    policy_number = StringField(
+        "Policy Number", validators=[InputRequired(), Length(min=6, max=50)]
+    )
+    claim_description = TextAreaField(
+        "Claim Description", validators=[InputRequired(), Length(min=10, max=1000)]
+    )
+    submit = SubmitField("Submit")
+
+
+@app.route("/submit_claim", methods=["GET", "POST"])
+def submit_claim():
+    form = ClaimsForm()
+    if form.validate_on_submit():
+        # Create a new claim instance
+        new_claim = Claim(
+            name=form.name.data,
+            email=form.email.data,
+            policy_number=form.policy_number.data,
+            claim_description=form.claim_description.data,
+        )
+
+        # Add the claim to the database session
+        db.session.add(new_claim)
+
+        # Commit the changes to the database
+        db.session.commit()
+
+        return "<h1>Claim submitted</h1>"
+
+    return render_template("claim_submission_form.html", form=form)

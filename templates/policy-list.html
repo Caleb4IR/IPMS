@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+
+    </style>
+</head>
+<body>
+    <body>
+        <h1>Policy List</h1>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Policy ID</th>
+                    <th>coverage</th>
+                    <th>image</th>
+                    <th>premium</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for policy in policies %}
+                <tr>
+                    <td>{{ policy.policy_id }}</td>
+                    <td>{{ policy.coverage }}</td>
+                    <td>{{ policy.image }}</td>
+                    <td>{{ policy.premium }}</td>
+                    <td>
+                        <a href="/policy-list/{{policy.policy_id}}/update">Update</a>
+                        <form action="{{url_for('.delete_policy_by_id')}}" method="POST">
+                            <input name="policy_id" type="text" value="{{policy.policy_id}}" hidden />
+                            <button type="submit">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </body> 
+</body>
+</html>
