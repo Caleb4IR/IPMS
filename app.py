@@ -1,65 +1,15 @@
+import os
 from flask import Flask, jsonify, request, render_template
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.sql import text
+from dotenv import load_dotenv
+from pprint import pprint
+import uuid
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField, SubmitField
+from wtforms.validators import InputRequired, Length, ValidationError
 
 app = Flask(__name__)
-users = [
-    {
-        "id": "1",
-        "name": "Stephen Murazik",
-        "pNumber": "0225534438",
-        "email": "stephenmurazik@gmail.com",
-        "admin": False,
-        "agent": False,
-        "password": "StephenMurazik1!",
-    },
-    {
-        "id": "2",
-        "Name": "Sonya White",
-        "pNumber": "0325534438",
-        "email": "sonyawhite@gmail.com",
-        "admin": True,
-        "agent": False,
-        "password": "SonyaWhite1!",
-    },
-    {
-        "id": "3",
-        "Name": "Ira Homenick",
-        "pNumber": "0425534438",
-        "email": "irahomenick@gmail.com",
-        "admin": True,
-        "agent": False,
-        "password": "IraHomenick1!",
-    },
-    {
-        "id": "4",
-        "fName": "Shannon Zulauf",
-        "pNumber": "0525534438",
-        "email": "shannonzulaf@gmail.com",
-        "admin": False,
-        "agent": False,
-        "password": "ShannonZulaf1!",
-    },
-]
-
-policies = [
-    {
-        "policy_id": "1",
-        "policy_type": "Vehicle",
-        "coverage": "comprehensive",
-        "img": "https://www.jamesedition.com/stories/wp-content/uploads/2022/11/16-630x420.jpg",
-    },
-    {
-        "policy_id": "2",
-        "policy_type": "Vehicle",
-        "coverage": "Third-Party, Fire and Theft",
-        "img": "https://i.kinja-img.com/image/upload/c_fill,h_675,pg_1,q_80,w_1200/1a34b102a47ef5e84bcd8dc73359f44c.jpg",
-    },
-    {
-        "policy_id": "3",
-        "policy_type": "Vehicle",
-        "coverage": "Third-Party",
-        "img": "https://blog.suzukiauto.co.za/hubfs/Swift%20MC%202021/Suzuki%20Swift%202021%20-%20160%20_%20Resized-1.png#keepProtocol",
-    },
-]
 
 policyholder = [
     {
@@ -81,23 +31,172 @@ policyholder = [
 ]
 
 
+load_dotenv()
+pprint(os.environ.get("AZURE_DATABASE_URL"))
+
+app = Flask(__name__)
+app.config["SECRET_KEY"] = os.environ.get("FORM_SECRET_KEY")
+
+connection_string = os.environ.get("AZURE_DATABASE_URL")
+app.config["SQLALCHEMY_DATABASE_URI"] = connection_string
+
+db = SQLAlchemy(app)
+
+
+try:
+    with app.app_context():
+        # Use text() to explicitly declare your SQL command
+        result = db.session.execute(text("SELECT 1")).fetchall()
+        print("Connection successful:", result)
+
+except Exception as e:
+    print("Error connecting to the database:", e)
+
+
+class User(db.Model):
+    __tablename__ = "users"
+    user_id = db.Column(
+        db.String(50), primary_key=True, default=lambda: str(uuid.uuid4())
+    )
+    name = db.Column(db.String(200), nullable=False)
+    email = db.Column(db.String(100), unique=True, nullable=False)
+    password = db.Column(db.String(100), nullable=False)
+    role_id = db.Column(db.String(50), nullable=False, default="3")
+
+    def to_dict(self):
+        return {
+            "user_id": self.user_id,
+            "name": self.name,
+            "email": self.email,
+            "password": self.password,
+            "role_id": self.role_id,
+        }
+
+
+class Policy(db.Model):
+    __tablename__ = "policies"
+    policy_id = db.Column(db.String(50), primary_key=True)
+    coverage = db.Column(db.String(50), nullable=False)
+    image = db.Column(db.String(200))
+    premium = db.Column(db.Float)
+
+    def to_dict(self):
+        return {
+            "policy_id": self.policy_id,
+            "coverage": self.coverage,
+            "image": self.image,
+            "premium": self.premium,
+        }
+
+
+class Role(db.Model):
+    __tablename__ = "roles"
+    role_id = db.Column(db.String(50), primary_key=True)
+    name = db.Column(db.String(50))
+
+    def to_dict(self):
+        return {
+            "role_id": self.role_id,
+            "name": self.name,
+        }
+
+
+class Policyholder(db.Model):
+    __tablename__ = "policyholders"
+    policy_number = db.Column(
+        db.String(50), primary_key=True, default=lambda: str(uuid.uuid4())
+    )
+    user_id = db.Column(db.String(50))
+    address = db.Column(db.String(300))
+    id_number = db.Column(db.String(50), unique=True, nullable=False)
+
+    def to_dict(self):
+        return {
+            "policy_number": self.policy_number,
+            "user_id": self.user_id,
+            "address": self.address,
+            "id_number": self.id_number,
+        }
+
+
+class RegistrationForm(FlaskForm):
+    name = StringField("Name", validators=[InputRequired(), Length(min=6)])
+    email = StringField("Email", validators=[InputRequired(), Length(min=11)])
+    password = PasswordField(
+        "Password", validators=[InputRequired(), Length(min=8, max=12)]
+    )
+    submit = SubmitField("Register")
+
+    # def validate_<fieldname>
+    def validate_email(self, field):  # Automatically called when submit happens
+        # inform WTF that there is an error
+        print("Validate email", field.data)
+        if User.query.filter_by(email=field.data).first():
+            raise ValidationError("Email taken")
+
+
+@app.route("/user/register", methods=["GET", "POST"])
+def register_page():
+    form = RegistrationForm()
+
+    name = request.form.get("name")
+    email = request.form.get("email")
+    password = request.form.get("password")
+
+    # Only works with POST
+    if form.validate_on_submit():
+        new_user = User(name=name, email=email, password=password)
+        try:
+            db.session.add(new_user)
+            db.session.commit()
+            return "<h1>Registration Successful</h1>"
+        except Exception as e:
+            db.session.rollback()
+            return "<h1>Server Error</h1>", 500
+
+    # GET issues token
+    return render_template("register.html", form=form)
+
+
+class LoginForm(FlaskForm):
+    email = StringField("Email", validators=[InputRequired(), Length(min=11)])
+    password = PasswordField(
+        "Password", validators=[InputRequired(), Length(min=8, max=12)]
+    )
+    submit = SubmitField("Login")
+
+    def validate_email(self, field):  # Automatically called when submit happens
+        # inform WTF that there is an error
+        print("Validate email", field.data)
+        if not User.query.filter_by(email=field.data).first():
+            raise ValidationError("Invaild Credentials")
+
+    def validate_password(self, field):  # Automatically called when submit happens
+        user_from_db = User.query.filter_by(email=self.email.data).first()
+
+        if user_from_db:
+            user_db_data = user_from_db.to_dict()
+            form_password = field.data
+            print(user_db_data, form_password)
+
+            if user_db_data["password"] != form_password:
+                raise ValidationError("Invaild Credentials")
+
+
+@app.route("/user/login", methods=["GET", "POST"])
+def login_page():
+    form = LoginForm()
+
+    if form.validate_on_submit():
+        return "<h1>Login successful</h1>"
+
+    return render_template("login.html", form=form)
+
+
 @app.route("/")
 def home():
+    policies = Policy.query.all()
     return render_template("home.html", policies=policies)
-
-
-@app.route("/policy_details")
-def policy_details(id):
-    policy = next((policy for policy in policies if policy["id"] == id), None)
-    if policy:
-        return render_template("policy_detail.html", policy=policy)
-    else:
-        return "Policy not found", 404
-
-
-@app.route("/about")
-def about():
-    return render_template("about.html")
 
 
 @app.route("/profile")
@@ -105,34 +204,36 @@ def profile():
     return render_template("profile.html", users=users)
 
 
-@app.route("/comprehensive")
-def comprehensive():
-    filtered_policy = None
-    for policy in policies:
-        if policy["policy_id"] == "1":
-            filtered_policy = policy
-            break
-    return render_template("comprehensive.html", policy=filtered_policy)
+@app.route("/cover/<policy_id>")
+def comprehensive(policy_id):
+    policy = Policy.query.filter_by(policy_id="1").first()
+    if policy:
+        return render_template("third_party.html", policy=policy.to_dict())
+    else:
+        return "Policy not found", 404
 
 
-@app.route("/third_party")
+@app.route("/cover/3")
 def third_party():
-    filtered_policy = None
-    for policy in policies:
-        if policy["policy_id"] == "3":
-            filtered_policy = policy
-            break
-    return render_template("third_party.html", policy=filtered_policy)
+    policy = Policy.query.filter_by(policy_id="3").first()
+    if policy:
+        return render_template("third_party.html", policy=policy.to_dict())
+    else:
+        return "Policy not found", 404
 
 
-@app.route("/fire_theft")
+@app.route("/cover/2")
 def fire_theft():
-    filtered_policy = None
-    for policy in policies:
-        if policy["policy_id"] == "2":
-            filtered_policy = policy
-            break
-    return render_template("fire_theft.html", policy=filtered_policy)
+    policy = Policy.query.filter_by(policy_id="2").first()
+    if policy:
+        return render_template("fire_theft.html", policy=policy.to_dict())
+    else:
+        return "Policy not found", 404
+
+
+@app.route("/dashboard")
+def customer_dashboard():
+    return render_template("customer_dashboard.html")
 
 
 # USERS CRUD OPERATIONS
@@ -174,76 +275,6 @@ def update_user_by_id(id):
         return jsonify({"message": "Movie updated", "data": user_to_update})
     else:
         return jsonify({"message": "Movie not updated"}), 404
-
-
-# Register a user
-@app.route("/register", methods=["GET"])
-def register_user_form():
-    return render_template("register.html")
-
-
-@app.route("/home", methods=["POST"])
-def register_user():
-    user_ids = [int(user["id"]) for user in users]
-    max_id = max(user_ids)
-    next_id = str(max_id + 1)
-
-    name = request.form["name"]
-    number = request.form["number"]
-    email = request.form["email"]
-    password = request.form["password"]
-
-    new_user = {
-        "id": next_id,
-        "name": name,
-        "number": number,
-        "email": email,
-        "password": password,
-    }
-    users.append(new_user)
-
-    return jsonify({"success": True})
-
-
-# User login
-@app.route("/login", methods=["GET"])
-def signin_form():
-    return render_template("login.html")
-
-
-@app.route("/login", methods=["POST"])
-def login_user():
-    email = request.form.get("email")
-    password = request.form.get("password")
-
-    for user in users:
-        if user["email"] == email and user["password"] == password:
-            return jsonify(
-                {"success": True, "message": "Login successful", "user": user}
-            )
-
-    return jsonify({"success": False, "message": "Invalid email or password"})
-
-
-# Password reset form
-@app.route("/reset_password", methods=["GET"])
-def reset_password_form():
-    return render_template("reset_password.html")
-
-
-@app.route("/reset_password", methods=["POST"])
-def reset_password():
-    email = request.form.get("email")
-    new_password = request.form.get("new_password")
-
-    for user in users:
-        if user["email"] == email:
-            user["password"] = new_password
-            return jsonify({"success": True, "message": "Password reset successfully."})
-
-    return jsonify(
-        {"success": False, "message": "User with this email does not exist."}
-    )
 
 
 # POLICY CRUD OPERATIONS

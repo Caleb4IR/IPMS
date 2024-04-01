@@ -6,6 +6,12 @@
     <title>Document</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css">
     <link rel="stylesheet" href="style.css">
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+      integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N"
+      crossorigin="anonymous"
+    />
 
     <style>
     :root{
@@ -309,6 +315,7 @@
         height:20rem;
         width:20rem;
         margin:1rem 0;
+        object-fit: contain;
     }
 
     .contact{
@@ -597,11 +604,11 @@
     
         <nav class="navbar">
             <ul>
-                <li><a href="/comprehensive">Comprehensive</a></li>
-                <li><a href="/fire_theft">Fire & Theft</a></li>
-                <li><a href="/third_party">Third Party</a></li>
+                <li><a href="/cover/1">Comprehensive</a></li>
+                <li><a href="/cover/2">Fire & Theft</a></li>
+                <li><a href="/cover/3">Third Party</a></li>
                 
-                <a href="/login"><butto"n class="btnLogin-popup">Sign In</button></a>
+                <a href="/user/login"><butto"n class="btnLogin-popup">Sign In</button></a>
             </ul>
         </nav>
     
@@ -629,61 +636,66 @@
             {% for policy in policies %}
             <div class="box">
                 <h1>{{policy.coverage}}</h1>
-                <img src="{{policy.img}}" alt="">
-                <span class="price"><a href="/policy_details/{{policy.id}}"><button class="btn">Explore</button></a></span>
+                <img src="{{policy.image}}" alt="">
+                <span class="price"><a href="/cover/{{ policy.policy_id }}"><button class="btn">Explore</button></a></span>
             </div>
             {% endfor %}
         
         </div>
         
-        </section>
+    </section>
 
-        <section class="contact" id="contact">
+    <section class="contact" id="contact">
 
-            <h1 class="heading">contact</h1>
-            
-            
-            <form action="">
-            
-                <div class="inputBox">
-                    <input type="text" placeholder="first name">
-                    <input type="text" placeholder="last name">
-                </div>
-            
-                <div class="inputBox">
-                    <input type="email" placeholder="your email">
-                    <input type="password" placeholder="your password">
-                </div>
-            
-                <textarea name="" id="" cols="30" rows="10" placeholder="message"></textarea>
-            
-                <input type="submit" value="message" class="btn">
-            
-            </form>
-            
-        </section>
-
-        <section class="footer">
-
-            <div class="box-container">
-            
-                <div class="box">
-                    <h3>quick links</h3>
-                    <a href="#">home</a>
-                    <a href="#">products</a>
-                    <a href="#">contact</a>
-                </div>
-            
-                <div class="box">
-                    <h3>contact us</h3>
-                    <p> <i class="fas fa-map-marker-alt"></i> Cape Town, South Africa 7798 </p>
-                    <p> <i class="fas fa-globe"></i> sanlam@icon.co.za </p>
-                    <p> <i class="fas fa-phone"></i> +27 78 456 8542 </p>
-                </div>
-            
+        <h1 class="heading">contact</h1>
+        
+        
+        <form action="">
+        
+            <div class="inputBox">
+                <input type="text" placeholder="first name">
+                <input type="text" placeholder="last name">
             </div>
-            
-            </section>
+        
+            <div class="inputBox">
+                <input type="email" placeholder="your email">
+                <input type="password" placeholder="your password">
+            </div>
+        
+            <textarea name="" id="" cols="30" rows="10" placeholder="message"></textarea>
+        
+            <input type="submit" value="message" class="btn">
+        
+        </form>
+        
+    </section>
 
+    <section class="footer">
+
+        <div class="box-container">
+        
+            <div class="box">
+                <h3>quick links</h3>
+                <a href="#">home</a>
+                <a href="#">products</a>
+                <a href="#">contact</a>
+            </div>
+        
+            <div class="box">
+                <h3>contact us</h3>
+                <p> <i class="fas fa-map-marker-alt"></i> Cape Town, South Africa 7798 </p>
+                <p> <i class="fas fa-globe"></i> sanlam@icon.co.za </p>
+                <p> <i class="fas fa-phone"></i> +27 78 456 8542 </p>
+            </div>
+        
+        </div>
+        
+    </section>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct"
+      crossorigin="anonymous"
+    ></script>
 </body>
 </html>

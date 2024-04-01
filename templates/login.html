@@ -16,15 +16,29 @@
     </style>
 </head>
 <body>
-    <form class="signin-form" action="{{ url_for('login_user') }}" method="POST">
-        <input type="text" name="email" placeholder="Email">
-        <input type="text" name="password" placeholder="Password">
-        <button type="submit">Sign In</button>
-        <div class="register_reset">
-            <a href="/register">Register</a>
-            <a href="/reset_password">Reset Password</a>
-        </div>
-        
-    </form>
+    <div class="container">
+        <h1>Login</h1>
+        <!-- action="" -> Submit to current url  -->
+        <form method="POST" action="">
+          <!-- Hidden input with token as value -->
+          <!-- Validations -->
+          {{form.hidden_tag()}} {% if form.email.errors %} {% for error in
+          form.email.errors %}
+          <div style="color: red">{{error}}</div>
+          {% endfor %} {% endif %} {% if form.password.errors %} {% for error in
+          form.password.errors %}
+          <div style="color: red">{{error}}</div>
+          {% endfor %} {% endif %}
+          <div class="form-group">
+            {{form.email.label}}: {{form.email(placeholder="Email",
+            class="form-control")}}
+          </div>
+          <div class="form-group">
+            {{form.password.label}}: {{form.password(placeholder="Password",
+            class="form-control")}}
+          </div>
+          {{form.submit(class="btn btn-primary")}}
+        </form>
+      </div>
 </body>
 </html>

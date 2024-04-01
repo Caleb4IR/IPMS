@@ -4,25 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-
     <style>
-        .register-form{
-            display: grid;
-            gap: 12px;
-        }
+        /* .register{
+        display: grid;
+        gap: 12px;
+        } */
     </style>
-
+    
 </head>
 <body>
-    <form class="register-form" action="{{url_for('register_user')}}" method="POST">
-        <input type="text" name="name" placeholder="Full Name">
-        <input type="text" name="number" placeholder="Cell Number">
-        
-        <input name="email" type="text" placeholder="Email"/>
-        <input name="password" type="text" placeholder="Password"/>
+    <h1>Register</h1>
+    <form class="register" action="" method="POST">
+        <!-- Hidden input field with token as value -->
+        {{form.hidden_tag()}}
 
-        <button type="submit">Register</button>
-        <a href="/login">Login</a>
+        {% if form.email.errors %}
+
+            {% for error in form.email.errors %}
+                <div style="color: red">{{error}}</div>
+            {% endfor %}
+
+        {% endif %}
+
+        {{form.name.label}}: {{form.name(placeholder="Name")}} <br/>
+        {{form.email.label}}: {{form.email(placeholder="Email")}} <br/>
+        {{form.password.label}}: {{form.password(placeholder="Password")}} <br/>
+        {{form.submit}}
     </form>
 </body>
 </html>

@@ -651,11 +651,11 @@
     
         <nav class="navbar">
             <ul>
-                <li><a href="/comprehensive">Comprehensive</a></li>
-                <li><a href="/fire_theft">Fire&Theft</a></li>
-                <li><a href="/third_party">ThirdParty</a></li>
+                <li><a href="/cover/1">Comprehensive</a></li>
+                <li><a href="/cover/2">Fire&Theft</a></li>
+                <li><a href="/cover/3">ThirdParty</a></li>
                 
-                <a href="/login"><butto"n class="btnLogin-popup">Sign In</button></a>
+                <a href="/user/login"><butto"n class="btnLogin-popup">Sign In</button></a>
             </ul>
         </nav>
     
@@ -668,7 +668,7 @@
         </div>
     
         <div class="image">
-            <img src="{{policy.img}}" alt="">
+            <img src="{{policy.image}}" alt="">
         </div>
     
     </section>
@@ -697,28 +697,10 @@
 
     </section>
 
-    <section class="product" id="product">
-
-        <h1 class="heading">products</h1>
-        
-        <!-- <h1 class="title">Packages</h1> -->
-        
-        <div class="box-container">
-            {% for policy in policies %}
-            <div class="box">
-                <h1>{{policy.coverage}}</h1>
-                <img src="{{policy.img}}" alt="">
-                <span class="price"><a href="/policy_details/{{policy.id}}"><button class="btn">Explore</button></a></span>
-            </div>
-            {% endfor %}
-        
-        </div>
-        
-    </section>
 
     <section class="contact" id="contact">
 
-        <h1 class="heading">contact</h1>
+        <h1 class="heading">request quote</h1>
         
         
         <form action="">
@@ -733,9 +715,9 @@
                 <input type="password" placeholder="your password">
             </div>
         
-            <textarea name="" id="" cols="30" rows="10" placeholder="message"></textarea>
+            <textarea name="" id="" cols="30" rows="10" placeholder="vehicle description"></textarea>
         
-            <input type="submit" value="message" class="btn">
+            <input type="submit" value="submit" class="btn">
         
         </form>
         
