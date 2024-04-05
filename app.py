@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from pprint import pprint
 import uuid
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, TextAreaField
+from wtforms import StringField, PasswordField, SubmitField, TextAreaField, SelectField
 from wtforms.validators import InputRequired, Length, ValidationError
 
 app = Flask(__name__)
@@ -206,15 +206,6 @@ class LoginForm(FlaskForm):
                 raise ValidationError("Invaild Credentials")
 
 
-@app.route("/admin/dashboard")
-def admin_dashboard():
-    total_users = User.query.count()
-    total_policies = Policy.query.count()
-    return render_template(
-        "admin_dashboard.html", total_users=total_users, total_policies=total_policies
-    )
-
-
 @app.route("/user/login", methods=["GET", "POST"])
 def login_page():
     form = LoginForm()
@@ -223,6 +214,55 @@ def login_page():
         return "<h1>Login successful</h1>"
 
     return render_template("login.html", form=form)
+
+
+# class RegistrationFormAdmin(FlaskForm):
+#     name = StringField("Name", validators=[InputRequired(), Length(min=6)])
+#     email = StringField("Email", validators=[InputRequired(), Length(min=11)])
+#     password = PasswordField(
+#         "Password", validators=[InputRequired(), Length(min=8, max=12)]
+#     )
+#     role = SelectField("Role", choices=[("1", "Admin"), ("2", "Agent")])
+#     submit = SubmitField("Register")
+
+#     # def validate_<fieldname>
+#     def validate_email(self, field):  # Automatically called when submit happens
+#         # inform WTF that there is an error
+#         print("Validate email", field.data)
+#         if User.query.filter_by(email=field.data).first():
+#             raise ValidationError("Email taken")
+
+
+# @app.route("/user/register", methods=["GET", "POST"])
+# def register_page():
+#     form = RegistrationFormAdmin()
+
+#     name = request.form.get("name")
+#     email = request.form.get("email")
+#     password = request.form.get("password")
+
+#     # Only works with POST
+#     if form.validate_on_submit():
+#         new_user = User(name=name, email=email, password=password)
+#         try:
+#             db.session.add(new_user)
+#             db.session.commit()
+#             return "<h1>Registration Successful</h1>"
+#         except Exception as e:
+#             db.session.rollback()
+#             return "<h1>Server Error</h1>", 500
+
+#     # GET issues token
+#     return render_template("admin_agent_register.html", form=form)
+
+
+@app.route("/admin/dashboard")
+def admin_dashboard():
+    total_users = User.query.count()
+    total_policies = Policy.query.count()
+    return render_template(
+        "admin_dashboard.html", total_users=total_users, total_policies=total_policies
+    )
 
 
 @app.route("/")
