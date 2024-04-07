@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claim Form</title>
+</head>
+<body>
+    <h1>Submit a Claim</h1>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div>{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <div>
+            {{ form.policy_number.label }}<br>
+            {{ form.policy_number() }}
+        </div>
+        <div>
+            {{ form.name.label }}<br>
+            {{ form.name() }}
+        </div>
+        <div>
+            {{ form.claim_description.label }}<br>
+            {{ form.claim_description(rows=5) }}
+        </div>
+        <div>
+            {{ form.submit() }}
+        </div>
+    </form>
+</body>
+</html>

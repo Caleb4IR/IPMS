@@ -29,7 +29,7 @@
                     <td>{{ user.email }}</td>
                     <td>{{ user.role.name }}</td>
                     <td>
-                        <a href="/user-list/{{user.user_id}}/update">Update</a>
+                        <a href="/user/admin/user-list/{{user.user_id}}/update">Update</a>
                         <form action="{{url_for('.delete_user_by_id')}}" method="POST">
                             <input name="user_id" type="text" value="{{user.user_id}}" hidden />
                             <button type="submit">Delete</button>

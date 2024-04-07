@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Policyholder</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-4">
+        <h2>Add Policyholder</h2>
+        <form method="post">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                <label for="user">Select User:</label>
+                {{ form.user(class="form-control") }}
+            </div>
+            <div class="form-group">
+                <label for="policy">Select Policy:</label>
+                {{ form.policy(class="form-control") }}
+            </div>
+            <div class="form-group">
+                <label for="address">Address:</label>
+                {{ form.address(class="form-control") }}
+            </div>
+            <div class="form-group">
+                <label for="ssn">Id Number:</label>
+                {{ form.id_number(class="form-control") }}
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+</body>
+</html>

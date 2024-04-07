@@ -14,7 +14,7 @@
 
 </head>
 <body>
-    <form class="update-form" action="{{url_for('update_policy')}}" method="POST">
+    <form class="update-form" action="{{url_for('policy_bp.update_policy')}}" method="POST">
         <input type="hidden" name="policy_id" value="{{ policy.policy_id }}">
         <input name="coverage" type="text" placeholder="Coverage" value="{{policy.coverage}}">
         <input name="image" type="text" placeholder="Image url" value="{{policy.image}}">

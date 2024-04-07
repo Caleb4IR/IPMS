@@ -14,7 +14,7 @@
 
 </head>
 <body>
-    <form class="update-form" action="{{url_for('update_user')}}" method="POST">
+    <form class="update-form" action="{{url_for('user_bp.update_user')}}" method="POST">
         <input type="hidden" name="user_id" value="{{ user.user_id }}">
         <input name="name" type="text" placeholder="Name" value="{{user.name}}">
         <input name="email" type="text" placeholder="Email" value="{{user.email}}">

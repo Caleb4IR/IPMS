@@ -29,7 +29,7 @@
                     <td>{{ policy.image }}</td>
                     <td>{{ policy.premium }}</td>
                     <td>
-                        <a href="/policy-list/{{policy.policy_id}}/update">Update</a>
+                        <a href="/user/admin/policy-list/{{policy.policy_id}}/update">Update</a>
                         <form action="{{url_for('.delete_policy_by_id')}}" method="POST">
                             <input name="policy_id" type="text" value="{{policy.policy_id}}" hidden />
                             <button type="submit">Delete</button>

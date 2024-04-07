@@ -18,15 +18,15 @@
 }
 
 .logo img{
-	width: 100px;
-	float: left;
-	padding-left: 5%;
-	padding-top: 2%;
+    width: 100px;
+    float: left;
+    padding-left: 5%;
+    padding-top: 2%;
 }
 
 header h1{
-	font-size: 2rem;
-	color: white;
+    font-size: 2rem;
+    color: white;
 }
 
 html{
@@ -107,51 +107,51 @@ header .logo i{
 }
 
 header .navbar .btnLogin-popup{
-	width: 130px;
-	height: 50px;
-	background: transparent;
-	border: 2px solid #fff;
-	outline: none;
-	border-radius: 6px;
-	cursor: pointer;
-	font-size: 2rem;
-	color: #fff;
-	font-weight: 500;
-	margin-left: 40px;
-	transition: .5s;
+    width: 130px;
+    height: 50px;
+    background: transparent;
+    border: 2px solid #fff;
+    outline: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 2rem;
+    color: #fff;
+    font-weight: 500;
+    margin-left: 40px;
+    transition: .5s;
 }
 
 header .navbar .btnLogin-popup:hover{
-	background: #fff;
-	color: #162938;
+    background: #fff;
+    color: #162938;
 }
 
 header .navbar .btnCart-popup{
-	width: 130px;
-	height: 50px;
-	background: transparent;
-	border: 2px solid #fff;
-	outline: none;
-	border-radius: 6px;
-	cursor: pointer;
-	font-size: 2rem;
-	color: #fff;
-	font-weight: 500;
-	margin-left: 40px;
-	transition: .5s;
+    width: 130px;
+    height: 50px;
+    background: transparent;
+    border: 2px solid #fff;
+    outline: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 2rem;
+    color: #fff;
+    font-weight: 500;
+    margin-left: 40px;
+    transition: .5s;
 }
 
 header .navbar .btnCart-popup:hover{
-	background: #fff;
-	color: #162938;
+    background: #fff;
+    color: #162938;
 }
 
 .wrapper{
-	position: relative;
-	width: 400px;
-	height: 440px;
-	background: transparent;
-	border: 2px solid #fff;
+    position: relative;
+    width: 400px;
+    height: 440px;
+    background: transparent;
+    border: 2px solid #fff;
 }
 
 header .navbar ul{
@@ -192,7 +192,7 @@ header #menu{
 }
 
 header .navbar ul li.sub-nav{
-	display: none;
+    display: none;
 }
 
 .home{
@@ -201,7 +201,7 @@ header .navbar ul li.sub-nav{
     align-items: center;
     justify-content: center;
     flex-wrap: wrap;
-	background-color: black;
+    background-color: black;
     background-size: 140% 85%;
     background-position: top;
     padding:1.5rem 7%;
@@ -243,20 +243,20 @@ header .navbar ul li.sub-nav{
 }
 
 .cart-page{
-	margin: 80px auto;
+    margin: 80px auto;
 }
 
 .cart-info{
-	display: flex;
-	flex-wrap: wrap;
+    display: flex;
+    flex-wrap: wrap;
 }
 
 th{
-	text-align: left;
-	padding: 5px;
-	color: #fff;
-	background: #ff523b;
-	font-weight: normal;
+    text-align: left;
+    padding: 5px;
+    color: #fff;
+    background: #ff523b;
+    font-weight: normal;
 }
 
 .product{
@@ -299,6 +299,7 @@ th{
     height:20rem;
     width:20rem;
     margin:1rem 0;
+    object-fit: contain;
 }
 
 .contact{
@@ -481,7 +482,7 @@ th{
 
 
 
- 
+
 
 
 
