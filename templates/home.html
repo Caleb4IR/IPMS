@@ -608,7 +608,14 @@
                 <li><a href="/cover/2">Fire & Theft</a></li>
                 <li><a href="/cover/3">Third Party</a></li>
                 
+
+                {% if current_user.is_authenticated %}
+                <a href="/user/profile"><butto"n class="btnLogin-popup">Profile</button></a>
+                <a href="/claims"><butto"n class="btnLogin-popup">Claim</button></a>
+                <a href="/user/logout"><butto"n class="btnLogin-popup">Logout</button></a>
+                {% else %}
                 <a href="/user/login"><butto"n class="btnLogin-popup">Sign In</button></a>
+                {% endif %}
             </ul>
         </nav>
     
@@ -653,13 +660,13 @@
         <form action="">
         
             <div class="inputBox">
-                <input type="text" placeholder="first name">
-                <input type="text" placeholder="last name">
+                <input type="text" placeholder="First Name">
+                <input type="text" placeholder="Last Name">
             </div>
         
             <div class="inputBox">
-                <input type="email" placeholder="your email">
-                <input type="password" placeholder="your password">
+                <input type="email" placeholder="Email">
+                <input type="text" placeholder="Subject">
             </div>
         
             <textarea name="" id="" cols="30" rows="10" placeholder="message"></textarea>

@@ -1,9 +1,10 @@
 import uuid
 from extensions import db
 from sqlalchemy.orm import relationship
+from flask_login import UserMixin
 
 
-class User(db.Model):
+class User(UserMixin, db.Model):
     __tablename__ = "users"
     user_id = db.Column(
         db.String(50), primary_key=True, default=lambda: str(uuid.uuid4())
@@ -15,7 +16,7 @@ class User(db.Model):
         db.String(50), db.ForeignKey("roles.role_id"), nullable=False, default="3"
     )
     role = relationship("Role", back_populates="users")
-    policyholder = relationship("Policyholder", back_populates="users")
+    policyholder = relationship("Policyholder", back_populates="user")
 
     def to_dict(self):
         return {
@@ -25,3 +26,6 @@ class User(db.Model):
             "password": self.password,
             "role": self.role_id,
         }
+
+    def get_id(self):
+        return self.user_id

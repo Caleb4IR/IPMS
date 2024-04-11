@@ -251,13 +251,6 @@ header .navbar ul li.sub-nav{
     flex-wrap: wrap;
 }
 
-th{
-    text-align: left;
-    padding: 5px;
-    color: #fff;
-    background: #ff523b;
-    font-weight: normal;
-}
 
 .product{
     min-height: 100vh;

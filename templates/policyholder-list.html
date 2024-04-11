@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css">
-    <title>Document</title>
+    <title>Policyholders</title>
     <style>
         table {
             width: 100%;
@@ -571,14 +571,14 @@
 <body>
     <header>
 
-        <a href="/user/admin/dashboard" class="logo"><i class="fas fa-car">        Auto Insure</i></a>
+        <a href="/agent/dashboard" class="logo"><i class="fas fa-car">        Auto Insure</i></a>
     
         <div id="menu" class="fas fa-bars"></div>
     
         <nav class="navbar">
             <ul>
-                <li><a href="/user/admin/user-list">Users</a></li>
-                <li><a href="/user/admin/policy-list">Policies</a></li>
+                <li><a href="/agent/policyholder-list">Policyholders</a></li>
+                <li><a href="/agent/claim-list">Claims</a></li>
                 
                 {% if current_user.is_authenticated %}
                 <a href="/user/logout"><butto"n class="btnLogin-popup">Logout</button></a>
@@ -592,29 +592,28 @@
     <section class="product" id="product">
         <h1></h1>
         <div class="content">
-            <h1>Users</h1>
+            <h1>Policyholders</h1>
         </div>
         <table border="1">
             <thead>
                 <tr>
-                    <th>User ID</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Role</th>
+                    <th>Policy Number</th>
+                    <th>Address</th>
+                    <th>ID Number</th>
+                    <th>Coverage</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <tbody>
                 {% for user in users %}
                 <tr>
-                    <td>{{ user.user_id }}</td>
-                    <td>{{ user.name }}</td>
-                    <td>{{ user.email }}</td>
-                    <td>{{ user.role.name }}</td>
+                    <td>{{ user.policy_number }}</td>
+                    <td>{{ user.address }}</td>
+                    <td>{{ user.id_number }}</td>
+                    <td>{{ user.policy.coverage }}</td>
                     <td>
-                        <a href="/user/admin/user-list/{{user.user_id}}/update">Update</a>
                         <form action="{{url_for('.delete_user_by_id')}}" method="POST">
-                            <input name="user_id" type="text" value="{{user.user_id}}" hidden />
+                            <input name="policy_number" type="text" value="{{user.policy_number}}" hidden />
                             <button type="submit">Delete</button>
                         </form>
                     </td>
@@ -622,7 +621,7 @@
                 {% endfor %}
             </tbody>
         </table>
-            <a href="/user/admin/register"><button class="btn">Register User</button></a>
+            <a href="/agent/add-policyholder"><button class="btn">Register Policyholder</button></a>
     </section>
 </body>
 </html>

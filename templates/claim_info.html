@@ -1,13 +1,21 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Policyholder</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
-
+    <!-- <link rel="stylesheet" href={{url_for('static', filename='style.css')}}> -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+      integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N"
+      crossorigin="anonymous"
+    />
     <style>
+        
+    .table {
+        background: white;
+    }
     :root{
         --blue:#2273F8;
     }
@@ -205,60 +213,6 @@
         display: none;
     }
 
-    .about{
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-wrap: wrap;
-    background:#333;
-    padding:2rem;
-    /* padding-top: 6rem; */
-    }
-
-    .about .image{
-        flex:1 1 40rem;
-        text-align: center;
-        padding:4rem 0;
-    }
-
-    .about .image img{
-        height:50vh;
-    }
-
-    .about .content{
-        flex:1 1 40rem;
-    }
-
-    .about .content h3{
-        font-size: 4rem;
-        color:#fff;
-        padding-bottom: 25px;
-    }
-
-    .about .content .heading{
-        background:rgba(0,0,0,.3);
-    }
-
-    .about .content p{
-        font-size: 1.5rem;
-        color:#eee;
-        padding:1rem 0;
-        padding-bottom: 25px;
-        line-height: 1.5;
-    }
-
-    .about .content ul li{
-        list-style: none;
-        font-size: 2rem;
-        color:#fff;
-        padding:.5rem 0;
-    }
-
-    .about .content ul li i{
-        color:var(--blue);
-    }
-
     .home{
         min-height: 100vh;
         display: flex;
@@ -288,6 +242,12 @@
 
     .home .content h1{
         font-size: 4rem;
+        color:#fff;
+    }
+
+    .product .content h1{
+        font-size: 4rem;
+        padding: 40px;
         color:#fff;
     }
 
@@ -324,9 +284,10 @@
     }
 
     .product{
-        min-height: 100vh;
+        min-height: 80vh;
         text-align: center;
-        background:#eee;
+        /* background:#eee; */
+        background: black;
         padding:1rem;
         padding-top: 8rem;
     }
@@ -363,6 +324,7 @@
         height:20rem;
         width:20rem;
         margin:1rem 0;
+        object-fit: contain;
     }
 
     .contact{
@@ -639,22 +601,21 @@
 
     }
     </style>
-
 </head>
 <body>
-
     <header>
 
-        <a href="/" class="logo"><i class="fas fa-car">Auto Insure</i></a>
+        <a href="/" class="logo"><i class="fas fa-car">        Auto Insure</i></a>
     
         <div id="menu" class="fas fa-bars"></div>
     
         <nav class="navbar">
             <ul>
                 <li><a href="/cover/1">Comprehensive</a></li>
-                <li><a href="/cover/2">Fire&Theft</a></li>
-                <li><a href="/cover/3">ThirdParty</a></li>
+                <li><a href="/cover/2">Fire & Theft</a></li>
+                <li><a href="/cover/3">Third Party</a></li>
                 
+
                 {% if current_user.is_authenticated %}
                 <a href="/user/profile"><butto"n class="btnLogin-popup">Profile</button></a>
                 <a href="/claims"><butto"n class="btnLogin-popup">Claim</button></a>
@@ -666,69 +627,35 @@
         </nav>
     
     </header>
-
-    <section class="home" id="home">
-
+    <section class="product" id="product">
+        <h1></h1>
+        
         <div class="content">
-            <h1>{{policy.coverage}}</h1>
+            <h1>Claims Information</h1>
+            <table class="table table-striped">
+                <thead >
+                    <tr>
+                        <th>Claim ID</th>
+                        <th>Name</th>
+                        <th>Claim Description</th>
+                        <th>Submission Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for claim in claims %}
+                    <tr>
+                        <td>{{ claim.claim_id }}</td>
+                        <td>{{ claim.name }}</td>
+                        <td>{{ claim.claim_description }}</td>
+                        <td>{{ claim.submission_date }}</td>
+                        <td>{{ claim.status }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
-    
-        <div class="image">
-            <img src="{{policy.image}}" alt="">
-        </div>
-    
     </section>
-
-    <section class="about" id="about">
-
-        <div class="image">
-            <img src="" alt="">
-        </div>
-
-        <div class="content">
-            <h3>Vehicle Cover</h3>
-            <p>Covers you for theft and hi-jacking. It also covers you for liability for damage to other people's property due to a car accident you're involved in.</p>
-            <ul>
-                <li> <i class="fas fa-check-double"></i> Free comprehensive car hire - Group F for 30 days </li>
-                <li> <i class="fas fa-check-double"></i> 24/7 emergency roadside assistance, home-drive assistance </li>
-                <li> <i class="fas fa-check-double"></i> Vehicle keys </li>
-                <li> <i class="fas fa-check-double"></i> Emergency repairs, costs and alternative accommodation </li>
-                <li> <i class="fas fa-check-double"></i> Tow-in costs after mechanical breakdown and recovery costs </li>
-                <li> <i class="fas fa-check-double"></i> Wreckage removal </li>
-                <li> <i class="fas fa-check-double"></i> Replacement of new vehicle within 24 months and 60 000km from first registration </li>
-                <li> <i class="fas fa-check-double"></i> Accidental damage to tyres or rims </li>
-                <li> <i class="fas fa-check-double"></i> A credit shortfall with or without residual </li>
-            </ul>
-        </div>
-
-    </section>
-
-
-    <section class="contact" id="contact">
-
-        <h1 class="heading">request quote</h1>
-        
-        
-        <form action="">
-        
-            <div class="inputBox">
-                <input type="text" placeholder="first name">
-                <input type="text" placeholder="last name">
-            </div>
-        
-            <div class="inputBox">
-                <input type="email" placeholder="your email">
-                <input type="password" placeholder="your password">
-            </div>
-        
-            <textarea name="" id="" cols="30" rows="10" placeholder="vehicle description"></textarea>
-        
-            <input type="submit" value="submit" class="btn">
-        
-        </form>
-        
-    </section>
-
     <section class="footer">
 
         <div class="box-container">
@@ -750,6 +677,11 @@
         </div>
         
     </section>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct"
+      crossorigin="anonymous"
+    ></script>
 </body>
 </html>

@@ -11,22 +11,30 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, TextAreaField, SelectField
 from wtforms.validators import InputRequired, Length, ValidationError
 
-from extensions import db
+from extensions import db, login_manager
+from models.user import User
 
 
 app = Flask(__name__)
 
 
 load_dotenv()
-pprint(os.environ.get("AZURE_DATABASE_URL"))
+pprint(os.environ.get("LOCAL_DATABASE_URL"))
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.environ.get("FORM_SECRET_KEY")
 
-connection_string = os.environ.get("AZURE_DATABASE_URL")
+connection_string = os.environ.get("LOCAL_DATABASE_URL")
 app.config["SQLALCHEMY_DATABASE_URI"] = connection_string
 
 db.init_app(app)
+login_manager.init_app(app)
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(user_id)
+
 
 from routes.user_bp import user_bp
 

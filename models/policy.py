@@ -11,8 +11,6 @@ class Policy(db.Model):
     premium = db.Column(db.Float)
     policyholder = relationship("Policyholder", back_populates="policy")
 
-    claims_relationship = relationship("Claim")
-
     def to_dict(self):
         return {
             "policy_id": self.policy_id,

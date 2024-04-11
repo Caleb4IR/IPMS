@@ -655,7 +655,14 @@
                 <li><a href="/cover/2">Fire&Theft</a></li>
                 <li><a href="/cover/3">ThirdParty</a></li>
                 
+                {% if current_user.is_authenticated %}
+                <a href="/user/profile"><butto"n class="btnLogin-popup">Profile</button></a>
+                <a href="/claims"><butto"n class="btnLogin-popup">Claim</button></a>
+                <a href="/user/logout"><butto"n class="btnLogin-popup">Logout</button></a> 
+                {% else %}
                 <a href="/user/login"><butto"n class="btnLogin-popup">Sign In</button></a>
+                {% endif %}
+                
             </ul>
         </nav>
     

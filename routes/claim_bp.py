@@ -18,44 +18,57 @@ claim_bp = Blueprint("claim_bp", __name__)
 
 
 # Claim Submission
-class ClaimsForm(FlaskForm):
+class ClaimForm(FlaskForm):
     policy_number = StringField("Policy Number", validators=[InputRequired()])
-    name = StringField("Name", validators=[InputRequired()])
-    claim_description = TextAreaField("Description", validators=[InputRequired()])
+    name = StringField("Customer Name", validators=[InputRequired()])
+    claim_description = TextAreaField("Claim Description", validators=[InputRequired()])
     submit = SubmitField("Submit")
 
 
 # Route to handle claim submission
 @claim_bp.route("/claims", methods=["GET", "POST"])
-def claims():
-    form = ClaimsForm()
-
+def claim_form():
+    form = ClaimForm()
     if form.validate_on_submit():
-        policy_number = request.form.get("policy_number")
-        name = request.form.get("name")
-        claim_description = request.form.get("claim_description")
+        policy_number = form.policy_number.data
+        name = form.name.data
+        claim_description = form.claim_description.data
 
-        # Get policyholder based on policy number
+        # Check if policy number exists in policyholder table
         policyholder = Policyholder.query.filter_by(policy_number=policy_number).first()
+        if policyholder is None:
+            return "Policy number does not exist."
 
-        if policyholder:
-            # Create a new Claim object
-            new_claim = Claim(
-                policy_id=policyholder.policy_id,
-                policy_number=policy_number,
-                name=name,
-                claim_description=claim_description,
-                submission_date=datetime.now(),
-                status="Pending Approval",
-            )
+        # Create a new claim
+        new_claim = Claim(
+            policy_number=policy_number, name=name, claim_description=claim_description
+        )
+        db.session.add(new_claim)
+        db.session.commit()
 
-            # Add the new claim to the database session
-            db.session.add(new_claim)
-            db.session.commit()
-            flash("Claim submitted successfully!", "success")
-            return redirect(url_for("claims"))
-
-        else:
-            flash("Error: Policy number not found.", "error")
+        flash("Claim submitted successfully.", "success")
+        return redirect(url_for("claim_bp.claim_form"))
 
     return render_template("claim_form.html", form=form)
+
+
+@claim_bp.route("/agent/claim-list")
+def claim_list():
+    pending_claims = Claim.query.filter_by(status="Pending Approval").all()
+    return render_template("claims-list.html", claims=pending_claims)
+
+
+@claim_bp.route("/update_claim_status", methods=["POST"])
+def update_claim_status():
+    claim_id = request.form["claim_id"]
+    new_status = request.form["status"]
+
+    claim = Claim.query.get(claim_id)
+    if claim:
+        claim.status = new_status
+        db.session.commit()
+        flash("Claim status updated successfully.", "success")
+    else:
+        flash("Claim not found.", "error")
+
+    return redirect(url_for("claim_bp.claim_list"))
