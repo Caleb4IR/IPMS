@@ -23,9 +23,9 @@ policyholder_bp = Blueprint("policyholder_bp", __name__)
 @login_required
 def agent_dashboard():
     total_users = Policyholder.query.count()
-    total__claims = Claim.query.filter_by(status="Pending Approval").count()
+    total_claims = Claim.query.filter_by(status="Pending Approval").count()
     return render_template(
-        "agent_dashboard.html", total_users=total_users, total__claims=total__claims
+        "agent_dashboard.html", total_users=total_users, total_claims=total_claims
     )
 
 

@@ -37,7 +37,7 @@ def claim_form():
         # Check if policy number exists in policyholder table
         policyholder = Policyholder.query.filter_by(policy_number=policy_number).first()
         if policyholder is None:
-            return "Policy number does not exist."
+            return "<h1>Policy number does not exist.<h1>"
 
         # Create a new claim
         new_claim = Claim(
