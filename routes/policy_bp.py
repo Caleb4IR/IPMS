@@ -19,7 +19,7 @@ policy_bp = Blueprint("policy_bp", __name__)
 def comprehensive():
     policy = Policy.query.filter_by(policy_id="1").first()
     if policy:
-        return render_template("third_party.html", policy=policy.to_dict())
+        return render_template("comprehensive.html", policy=policy.to_dict())
     else:
         return "Policy not found", 404
 
