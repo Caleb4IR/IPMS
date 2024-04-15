@@ -19,12 +19,12 @@ app = Flask(__name__)
 
 
 load_dotenv()
-pprint(os.environ.get("LOCAL_DATABASE_URL"))
+pprint(os.environ.get("AZURE_DATABASE_URL_2"))
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.environ.get("FORM_SECRET_KEY")
 
-connection_string = os.environ.get("LOCAL_DATABASE_URL")
+connection_string = os.environ.get("AZURE_DATABASE_URL_2")
 app.config["SQLALCHEMY_DATABASE_URI"] = connection_string
 
 db.init_app(app)
