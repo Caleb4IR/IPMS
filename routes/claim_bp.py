@@ -68,6 +68,7 @@ def update_claim_status():
         claim.status = new_status
         db.session.commit()
         flash("Claim status updated successfully.", "success")
+        return redirect(url_for("claim_bp.claim_list"))
     else:
         flash("Claim not found.", "error")
 

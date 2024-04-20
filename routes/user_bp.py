@@ -58,6 +58,7 @@ def register_page():
         try:
             db.session.add(new_user)
             db.session.commit()
+            flash("Regitration successful", "info")
             return redirect(url_for("user_bp.login_page"))
         except Exception as e:
             db.session.rollback()
@@ -148,6 +149,7 @@ def admin_register_page():
         try:
             db.session.add(new_user)
             db.session.commit()
+            flash("Regitration successful", "info")
             return redirect(url_for("user_bp.admin_register_page"))
         except Exception as e:
             db.session.rollback()
@@ -174,7 +176,8 @@ def delete_user_by_id():
     try:
         db.session.delete(filtered_user)
         db.session.commit()  # Making the change (update/delete/create) permanent
-        return f"<h1>User deleted Successfully</h1>"
+        flash("User deleted successfully", "info")
+        return redirect(url_for("user_bp.user_list_page"))
     except Exception as e:
         db.session.rollback()  # Undo the change
         return f"<h1>Error happened {str(e)}</h1>", 500
@@ -203,7 +206,8 @@ def update_user():
         user_to_update.email = request.form.get("email")
 
         db.session.commit()
-        return "<h1>User updated</h1>"
+        flash("User updated successfully", "info")
+        return redirect(url_for("user_bp.user_list_page"))
     except Exception as e:
         db.session.rollback()
         return "<h1>Server Error</h1>", 500

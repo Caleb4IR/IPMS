@@ -62,7 +62,8 @@ def delete_policy_by_id():
     try:
         db.session.delete(filtered_policy)
         db.session.commit()  # Making the change (update/delete/create) permanent
-        return f"<h1>Policy deleted Successfully</h1>"
+        flash("Policy deleted", "success")
+        return redirect(url_for("policy_bp.policy_list_page"))
     except Exception as e:
         db.session.rollback()  # Undo the change
         return f"<h1>Error happened {str(e)}</h1>", 500
@@ -92,7 +93,8 @@ def update_policy():
         policy_to_update.premium = request.form.get("premium")
 
         db.session.commit()
-        return "<h1>Premium updated</h1>"
+        flash("Policy updated", "success")
+        return redirect(url_for("policy_bp.policy_list_page"))
     except Exception as e:
         db.session.rollback()
         return "<h1>Server Error</h1>", 500

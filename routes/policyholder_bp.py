@@ -94,7 +94,8 @@ def delete_policyholder_by_id():
     try:
         db.session.delete(policyholder)
         db.session.commit()
-        return "<h1>Policyholder deleted successfully</h1>"
+        flash("Policyholder deleted!", "success")
+        return redirect(url_for("policyholder_bp.user_list_page"))
     except Exception as e:
         db.session.rollback()
         return f"<h1>Error occurred: {str(e)}</h1>", 500
