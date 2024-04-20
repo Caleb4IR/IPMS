@@ -8,6 +8,7 @@ import uuid
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, TextAreaField, SelectField
 from wtforms.validators import InputRequired, Length, ValidationError
+from werkzeug.security import generate_password_hash, check_password_hash
 
 from flask_login import current_user, login_required, login_user, logout_user
 
@@ -38,7 +39,6 @@ class RegistrationForm(FlaskForm):
 
     # def validate_<fieldname>
     def validate_email(self, field):  # Automatically called when submit happens
-        # inform WTF that there is an error
         print("Validate email", field.data)
         if User.query.filter_by(email=field.data).first():
             raise ValidationError("Email taken")
@@ -48,12 +48,12 @@ class RegistrationForm(FlaskForm):
 def register_page():
     form = RegistrationForm()
 
-    name = request.form.get("name")
-    email = request.form.get("email")
-    password = request.form.get("password")
-
     # Only works with POST
     if form.validate_on_submit():
+        name = request.form.get("name")
+        email = request.form.get("email")
+        password = generate_password_hash(form.password.data)
+
         new_user = User(name=name, email=email, password=password)
         try:
             db.session.add(new_user)
@@ -86,10 +86,9 @@ class LoginForm(FlaskForm):
         if user_from_db:
             user_db_data = user_from_db.to_dict()
             form_password = field.data
-            print(user_db_data, form_password)
 
-            if user_db_data["password"] != form_password:
-                raise ValidationError("Invaild Credentials")
+            if not check_password_hash(user_db_data["password"], form_password):
+                raise ValidationError("Invalid Credentials")
 
 
 @user_bp.route("/login", methods=["GET", "POST"])
@@ -135,15 +134,16 @@ class RegistrationFormAdmin(FlaskForm):
 def admin_register_page():
     form = RegistrationFormAdmin()
 
-    name = request.form.get("name")
-    email = request.form.get("email")
-    role_id = request.form.get("role")
-    password = request.form.get("password")
-
-    role = Role.query.filter_by(role_id=role_id).first()
-
     # Only works with POST
     if form.validate_on_submit():
+
+        name = request.form.get("name")
+        email = request.form.get("email")
+        role_id = request.form.get("role")
+        password = generate_password_hash(form.password.data)
+
+        role = Role.query.filter_by(role_id=role_id).first()
+
         new_user = User(name=name, email=email, password=password, role=role)
         try:
             db.session.add(new_user)

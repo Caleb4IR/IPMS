@@ -1,6 +1,7 @@
 from flask import Flask, Blueprint, redirect, request, render_template, url_for, flash
 from flask_login import login_required
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import not_
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import text
 from dotenv import load_dotenv
@@ -41,9 +42,13 @@ class AddPolicyholderForm(FlaskForm):
 def add_policyholder():
     form = AddPolicyholderForm()
 
-    # Populate user choices from the user table where role is 1
     form.user.choices = [
-        (user.user_id, user.name) for user in User.query.filter_by(role_id="3").all()
+        (user.user_id, user.name)
+        for user in User.query.filter(
+            not_(User.user_id.in_(db.session.query(Policyholder.user_id).distinct()))
+        )
+        .filter_by(role_id="3")
+        .all()
     ]
 
     # Populate policy choices from the policy table
@@ -79,16 +84,17 @@ def user_list_page():
 
 
 @policyholder_bp.route("/agent/user-list/delete", methods=["POST"])  # HOF
-def delete_user_by_id():
-    id = request.form.get("policy_number")
-    filtered_user = Policyholder.query.get(id)
-    if not filtered_user:
-        return "<h1>User not found</h1>", 404
+def delete_policyholder_by_id():
+    policy_number = request.form.get("policy_number")
+
+    policyholder = Policyholder.query.filter_by(policy_number=policy_number).first()
+    if not policyholder:
+        return "<h1>Policyholder not found</h1>", 404
 
     try:
-        db.session.delete(filtered_user)
-        db.session.commit()  # Making the change (update/delete/create) permanent
-        return f"<h1>User deleted Successfully</h1>"
+        db.session.delete(policyholder)
+        db.session.commit()
+        return "<h1>Policyholder deleted successfully</h1>"
     except Exception as e:
-        db.session.rollback()  # Undo the change
-        return f"<h1>Error happened {str(e)}</h1>", 500
+        db.session.rollback()
+        return f"<h1>Error occurred: {str(e)}</h1>", 500

@@ -11,7 +11,7 @@ class User(UserMixin, db.Model):
     )
     name = db.Column(db.String(200), nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
-    password = db.Column(db.String(100), nullable=False)
+    password = db.Column(db.String(200), nullable=False)
     role_id = db.Column(
         db.String(50), db.ForeignKey("roles.role_id"), nullable=False, default="3"
     )
